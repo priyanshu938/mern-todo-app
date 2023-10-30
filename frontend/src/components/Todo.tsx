@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { getRandomColor } from "../utils/getMuiColor";
+import { Navigate } from "react-router-dom";
 
 const Todo = () => {
   const [title, setTitle] = useState<string>("");
@@ -31,7 +32,9 @@ const Todo = () => {
 
   const dispatch = useDispatch();
   const todos = useSelector((state: RootState) => state.todo.todos);
-
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const todo: ITodo = {
@@ -52,7 +55,7 @@ const Todo = () => {
   const handleCompleteTodo = (todo: ITodo) => {
     dispatch(updateTodo({ ...todo, isCompleted: !todo.isCompleted }));
   };
-
+  if (!isAuthenticated) return <Navigate to="/" />;
   return (
     <Box sx={{ width: "90%" }}>
       <form

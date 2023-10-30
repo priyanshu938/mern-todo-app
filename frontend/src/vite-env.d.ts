@@ -15,3 +15,8 @@ interface ITodo {
   categoryChipColor: MuiStandardColors;
   isCompleted: boolean;
 }
+
+interface IError {
+  status: boolean;
+  message: string;
+}

@@ -5,28 +5,60 @@ import EmailIcon from "@mui/icons-material/Email";
 import { Lock } from "@mui/icons-material";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { callNotification } from "../redux/notificationSlice";
+import { RootState } from "../redux/store";
+import axios, { AxiosError } from "axios";
+import { BACKEND_URL } from "../App";
+import { login, logout } from "../redux/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(email, password);
-    dispatch(
-      callNotification({
-        open: true,
-        message: "Logged in",
-        severity: "success",
-      })
-    );
-    setEmail("");
-    setPassword("");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      const { data } = await axios.post(
+        `${BACKEND_URL}/users/login`,
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: data.success ? "success" : "error",
+        })
+      );
+      dispatch(login());
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        })
+      );
+      dispatch(logout());
+    }
   };
+  if (isAuthenticated) return <Navigate to="/todo" />;
+
   return (
     <>
       <Paper elevation={15} sx={{ width: "20rem", padding: "2rem" }}>

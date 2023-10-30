@@ -5,17 +5,22 @@ import EmailIcon from "@mui/icons-material/Email";
 import { Lock } from "@mui/icons-material";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { callNotification } from "../redux/notificationSlice";
 import { BACKEND_URL } from "../App";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { login, logout } from "../redux/authSlice";
+import { RootState } from "../redux/store";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const dispatch = useDispatch();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -38,20 +43,24 @@ const Register = () => {
           severity: data.success ? "success" : "error",
         })
       );
+      dispatch(login());
       setUsername("");
       setEmail("");
       setPassword("");
     } catch (error) {
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
       dispatch(
         callNotification({
           open: true,
-          message: "Internal Server Error",
+          message: data.message,
           severity: "error",
         })
       );
+      dispatch(logout());
     }
   };
-
+  if (isAuthenticated) return <Navigate to="/todo" />;
   return (
     <>
       <Paper elevation={15} sx={{ width: "20rem", padding: "2rem" }}>

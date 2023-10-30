@@ -1,6 +1,7 @@
 import { User } from "../models/user.js";
 import bcrypt from "bcrypt";
 import { sendCookie } from "../utils/features.js";
+import ErrorHandler from "../middlewares/error.js";
 
 export const login = async (req, res, next) => {
   try {
@@ -8,19 +9,12 @@ export const login = async (req, res, next) => {
 
     const user = await User.findOne({ email }).select("+password");
 
-    if (!user)
-      return res.status(201).json({
-        success: false,
-        message: "User not found!!",
-      });
+    if (!user) return next(new ErrorHandler("Invalid Email or Password", 400));
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch)
-      return res.status(201).json({
-        success: false,
-        message: "Wrong Password!",
-      });
+      return next(new ErrorHandler("Invalid Email or Password", 400));
 
     sendCookie(user, res, `Welcome back, ${user.name}`, 200);
   } catch (error) {
@@ -34,12 +28,7 @@ export const register = async (req, res, next) => {
 
     let user = await User.findOne({ email });
 
-    if (user) {
-      return res.status(201).json({
-        success: false,
-        message: "Email already exists!",
-      });
-    }
+    if (user) return next(new ErrorHandler("User Already Exist", 400));
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -68,6 +57,7 @@ export const logout = (req, res) => {
     })
     .json({
       success: true,
+      message: "Logged out successfully",
       user: req.user,
     });
 };
