@@ -6,19 +6,27 @@ import { Lock } from "@mui/icons-material";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { callNotification } from "../redux/notificationSlice";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const dispatch = useDispatch();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(email, password);
-    // Add your login logic here
+    dispatch(
+      callNotification({
+        open: true,
+        message: "Logged in",
+        severity: "success",
+      })
+    );
     setEmail("");
     setPassword("");
   };
-
   return (
     <>
       <Paper elevation={15} sx={{ width: "20rem", padding: "2rem" }}>

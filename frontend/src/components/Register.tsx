@@ -7,19 +7,27 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useDispatch } from "react-redux";
+import { callNotification } from "../redux/notificationSlice";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
+  const dispatch = useDispatch();
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(username, email, password);
+    dispatch(
+      callNotification({
+        open: true,
+        message: "Logged in",
+        severity: "error",
+      })
+    );
     setUsername("");
     setEmail("");
     setPassword("");
-    // Add your login logic here
   };
 
   return (

@@ -1,17 +1,24 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import { Stack } from "@mui/material";
+import Notification from "../utils/Notification";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Navbar = () => {
+  const open = useSelector((state: RootState) => state.notification.open);
+  const message = useSelector((state: RootState) => state.notification.message);
+  const severity = useSelector(
+    (state: RootState) => state.notification.severity
+  );
+
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <Notification open={open} severity={severity} message={message} />
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
