@@ -106,11 +106,15 @@ const Todo = () => {
   };
   const handleCompleteTodo = async (todo: ITodo) => {
     // dispatch(updateTodo({ ...todo, isCompleted: !todo.isCompleted }));
-
+    const updateTodo = { ...todo, isCompleted: !todo.isCompleted };
     try {
-      const { data } = await axios.put(`${BACKEND_URL}/task/${todo._id}`, {
-        withCredentials: true,
-      });
+      const { data } = await axios.put(
+        `${BACKEND_URL}/task/${todo._id}`,
+        updateTodo,
+        {
+          withCredentials: true,
+        }
+      );
       dispatch(
         callNotification({
           open: true,
@@ -150,7 +154,7 @@ const Todo = () => {
     }
   };
   useEffect(() => {
-    getTodos();
+    if (isAuthenticated) getTodos();
   }, [open]);
 
   if (!isAuthenticated) return <Navigate to="/" />;
@@ -216,17 +220,41 @@ const Todo = () => {
                       justifyContent: "center",
                       gap: "1rem",
                     }}
-                    onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                      e.preventDefault();
-                      dispatch(
-                        updateTodo({
+                    onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+                      try {
+                        e.preventDefault();
+
+                        const updateTodo = {
                           ...todo,
                           title: updateTodos.title,
                           category: updateTodos.category,
-                        })
-                      );
-                      setUpdateTodos({ _id: "", title: "", category: "" });
-                      setIsUpdateTodoClicked(false);
+                        };
+                        const { data } = await axios.put(
+                          `${BACKEND_URL}/task/${todo._id}`,
+                          updateTodo,
+                          {
+                            withCredentials: true,
+                          }
+                        );
+                        dispatch(
+                          callNotification({
+                            open: true,
+                            message: data.message,
+                            severity: data.success ? "success" : "error",
+                          })
+                        );
+                        setIsUpdateTodoClicked(false);
+                      } catch (error) {
+                        const err = error as AxiosError;
+                        const data: IError = err.response?.data as IError;
+                        dispatch(
+                          callNotification({
+                            open: true,
+                            message: data.message,
+                            severity: "error",
+                          })
+                        );
+                      }
                     }}
                   >
                     <TextField

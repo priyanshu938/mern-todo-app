@@ -29,6 +29,7 @@ const Navbar = () => {
       const { data } = await axios.get(`${BACKEND_URL}/users/logout`, {
         withCredentials: true,
       });
+      dispatch(logout());
       dispatch(
         callNotification({
           open: true,
@@ -36,7 +37,6 @@ const Navbar = () => {
           severity: data.success ? "success" : "error",
         })
       );
-      dispatch(logout());
     } catch (error) {
       const err = error as AxiosError;
       const data: IError = err.response?.data as IError;
