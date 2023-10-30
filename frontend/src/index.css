@@ -6,3 +6,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
+
+.registerLoginLink{
+  text-decoration: underline;
+  color:rgb(113, 112, 112);
+  &:hover{
+    color: rgba(9, 9, 72, 0.63);
+  }
+}

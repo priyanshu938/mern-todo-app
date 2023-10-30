@@ -55,9 +55,6 @@ const Todo = () => {
 
   return (
     <Box sx={{ width: "90%" }}>
-      <Typography variant="h3" gutterBottom sx={{ textAlign: "center" }}>
-        My todo app
-      </Typography>
       <form
         onSubmit={handleSubmit}
         style={{
