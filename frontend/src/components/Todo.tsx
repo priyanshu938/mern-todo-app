@@ -36,11 +36,12 @@ const Todo = () => {
   const [isUpdateTodoClicked, setIsUpdateTodoClicked] =
     useState<boolean>(false);
   const [updateTodos, setUpdateTodos] = useState<
-    Pick<ITodo, "id" | "title" | "category">
-  >({ id: "", title: "", category: "" });
+    Pick<ITodo, "_id" | "title" | "category">
+  >({ _id: "", title: "", category: "" });
 
   const dispatch = useDispatch();
   const todos = useSelector((state: RootState) => state.todo.todos);
+  const open = useSelector((state: RootState) => state.notification.open);
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
@@ -48,7 +49,6 @@ const Todo = () => {
     try {
       event.preventDefault();
       const todo: ITodo = {
-        id: Date.now() + "",
         title,
         category,
         categoryChipColor: getRandomColor(),
@@ -80,11 +80,55 @@ const Todo = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
-    dispatch(deleteTodo(id));
+  const handleDelete = async (_id: string | undefined) => {
+    try {
+      const { data } = await axios.delete(`${BACKEND_URL}/task/${_id}`, {
+        withCredentials: true,
+      });
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: data.success ? "success" : "error",
+        })
+      );
+    } catch (error) {
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        })
+      );
+    }
   };
-  const handleCompleteTodo = (todo: ITodo) => {
-    dispatch(updateTodo({ ...todo, isCompleted: !todo.isCompleted }));
+  const handleCompleteTodo = async (todo: ITodo) => {
+    // dispatch(updateTodo({ ...todo, isCompleted: !todo.isCompleted }));
+
+    try {
+      const { data } = await axios.put(`${BACKEND_URL}/task/${todo._id}`, {
+        withCredentials: true,
+      });
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: data.success ? "success" : "error",
+        })
+      );
+    } catch (error) {
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        })
+      );
+    }
   };
   const getTodos = async () => {
     try {
@@ -107,7 +151,7 @@ const Todo = () => {
   };
   useEffect(() => {
     getTodos();
-  }, []);
+  }, [open]);
 
   if (!isAuthenticated) return <Navigate to="/" />;
   return (
@@ -157,14 +201,14 @@ const Todo = () => {
       )}
       {todos?.map((todo, index) => {
         return (
-          <Box key={todo.id} marginBlock={2}>
+          <Box key={todo._id} marginBlock={2}>
             <Paper elevation={16} sx={{ height: "4.5rem", padding: "1rem" }}>
               <Stack
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
               >
-                {isUpdateTodoClicked && updateTodos.id === todo.id ? (
+                {isUpdateTodoClicked && updateTodos._id === todo._id ? (
                   <form
                     style={{
                       display: "flex",
@@ -181,7 +225,7 @@ const Todo = () => {
                           category: updateTodos.category,
                         })
                       );
-                      setUpdateTodos({ id: "", title: "", category: "" });
+                      setUpdateTodos({ _id: "", title: "", category: "" });
                       setIsUpdateTodoClicked(false);
                     }}
                   >
@@ -254,7 +298,7 @@ const Todo = () => {
                   <Chip label={todo.category} color={todo.categoryChipColor} />
 
                   <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDelete(todo.id)}>
+                    <IconButton onClick={() => handleDelete(todo._id)}>
                       <DeleteIcon color="error" />
                     </IconButton>
                   </Tooltip>
@@ -263,7 +307,7 @@ const Todo = () => {
                       onClick={() => {
                         setIsUpdateTodoClicked(true);
                         setUpdateTodos({
-                          id: todo.id,
+                          _id: todo._id,
                           title: todo.title,
                           category: todo.category,
                         });

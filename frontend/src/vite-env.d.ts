@@ -9,7 +9,7 @@ type MuiStandardColors =
   | "info"
   | "success";
 interface ITodo {
-  id: string;
+  _id?: string;
   title: string;
   category: string;
   categoryChipColor: MuiStandardColors;

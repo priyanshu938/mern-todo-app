@@ -31,12 +31,12 @@ export const todoSlice = createSlice({
       localStorage.setItem("todos", JSON.stringify(state.todos));
     },
     deleteTodo: (state, action: PayloadAction<string>) => {
-      state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+      state.todos = state.todos.filter((todo) => todo._id !== action.payload);
       localStorage.setItem("todos", JSON.stringify(state.todos));
     },
     updateTodo: (state, action: PayloadAction<ITodo>) => {
-      const { id, title, category, isCompleted } = action.payload;
-      const findTodo = state.todos.find((todo) => todo.id === id);
+      const { _id, title, category, isCompleted } = action.payload;
+      const findTodo = state.todos.find((todo) => todo._id === _id);
       if (findTodo) {
         findTodo.title = title;
         findTodo.category = category;
