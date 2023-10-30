@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Navbar from "./components/Navbar";
 
+export const BACKEND_URL = "http://localhost:8080/api/v1";
 function App() {
   return (
     <>

@@ -9,25 +9,47 @@ import { Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useDispatch } from "react-redux";
 import { callNotification } from "../redux/notificationSlice";
+import { BACKEND_URL } from "../App";
+import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const dispatch = useDispatch();
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(username, email, password);
-    dispatch(
-      callNotification({
-        open: true,
-        message: "Logged in",
-        severity: "error",
-      })
-    );
-    setUsername("");
-    setEmail("");
-    setPassword("");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      const { data } = await axios.post(
+        `${BACKEND_URL}/users/new`,
+        {
+          name: username,
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: data.success ? "success" : "error",
+        })
+      );
+      setUsername("");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      dispatch(
+        callNotification({
+          open: true,
+          message: "Internal Server Error",
+          severity: "error",
+        })
+      );
+    }
   };
 
   return (
@@ -110,7 +132,7 @@ const Register = () => {
               }}
               type="submit"
             >
-              Login
+              Register
             </Button>
             <Typography variant="body1">
               Already have an account?
