@@ -33,8 +33,7 @@ export const register = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     user = await User.create({ name, email, password: hashedPassword });
-
-    sendCookie(user, res, "Registered Successfully", 201);
+    sendCookie(user, res, `Welcome back, ${user.name}`, 200);
   } catch (error) {
     next(error);
   }

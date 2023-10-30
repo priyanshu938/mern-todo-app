@@ -1,6 +1,11 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, deleteTodo, updateTodo } from "../redux/todoSlice";
+import {
+  addTodo,
+  deleteTodo,
+  getMyTodos,
+  updateTodo,
+} from "../redux/todoSlice";
 import { RootState } from "../redux/store";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,6 +25,10 @@ import {
 } from "@mui/material";
 import { getRandomColor } from "../utils/getMuiColor";
 import { Navigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import { BACKEND_URL } from "../App";
+import { callNotification } from "../redux/notificationSlice";
+import { logout } from "../redux/authSlice";
 
 const Todo = () => {
   const [title, setTitle] = useState<string>("");
@@ -35,18 +44,40 @@ const Todo = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const todo: ITodo = {
-      id: Date.now() + "",
-      title,
-      category,
-      categoryChipColor: getRandomColor(),
-      isCompleted: false,
-    };
-    dispatch(addTodo(todo));
-    setTitle("");
-    setCategory("");
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    try {
+      event.preventDefault();
+      const todo: ITodo = {
+        id: Date.now() + "",
+        title,
+        category,
+        categoryChipColor: getRandomColor(),
+        isCompleted: false,
+      };
+      const { data } = await axios.post(`${BACKEND_URL}/task/new`, todo, {
+        withCredentials: true,
+      });
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: data.success ? "success" : "error",
+        })
+      );
+      setTitle("");
+      setCategory("");
+    } catch (error) {
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        })
+      );
+      dispatch(logout());
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -55,6 +86,29 @@ const Todo = () => {
   const handleCompleteTodo = (todo: ITodo) => {
     dispatch(updateTodo({ ...todo, isCompleted: !todo.isCompleted }));
   };
+  const getTodos = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/task/my`, {
+        withCredentials: true,
+      });
+      dispatch(getMyTodos({ todos: data.tasks }));
+    } catch (error) {
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        })
+      );
+      dispatch(logout());
+    }
+  };
+  useEffect(() => {
+    getTodos();
+  }, []);
+
   if (!isAuthenticated) return <Navigate to="/" />;
   return (
     <Box sx={{ width: "90%" }}>

@@ -4,9 +4,26 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Navbar from "./components/Navbar";
+import axios from "axios";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { login, logout } from "./redux/authSlice";
 
 export const BACKEND_URL = "http://localhost:8080/api/v1";
+
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    axios
+      .get(`${BACKEND_URL}/users/me`, { withCredentials: true })
+      .then(() => {
+        dispatch(login());
+      })
+      .catch((err) => {
+        dispatch(logout());
+      });
+  }, []);
+
   return (
     <>
       <BrowserRouter>

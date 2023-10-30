@@ -5,7 +5,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import { Lock } from "@mui/icons-material";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useDispatch, useSelector } from "react-redux";
 import { callNotification } from "../redux/notificationSlice";
@@ -22,6 +22,7 @@ const Register = () => {
     (state: RootState) => state.auth.isAuthenticated
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -43,10 +44,10 @@ const Register = () => {
           severity: data.success ? "success" : "error",
         })
       );
-      dispatch(login());
       setUsername("");
       setEmail("");
       setPassword("");
+      navigate("/todo");
     } catch (error) {
       const err = error as AxiosError;
       const data: IError = err.response?.data as IError;

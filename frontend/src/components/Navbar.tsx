@@ -47,7 +47,6 @@ const Navbar = () => {
           severity: "error",
         })
       );
-      dispatch(logout());
     }
   };
   return (
