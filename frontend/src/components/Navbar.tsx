@@ -92,22 +92,20 @@ const Navbar = () => {
                 </Link>
               </>
             ) : (
-              <Link to={"/"}>
-                <Button
-                  sx={{
-                    color: "#e8eaf6",
-                    backgroundColor: "#1a237e",
-                    textDecoration: "none",
-                    "&:hover": {
-                      backgroundColor: "#e8eaf6",
-                      color: "#1a237e",
-                    },
-                  }}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </Link>
+              <Button
+                sx={{
+                  color: "#e8eaf6",
+                  backgroundColor: "#1a237e",
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: "#e8eaf6",
+                    color: "#1a237e",
+                  },
+                }}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
             )}
           </Stack>
         </Toolbar>

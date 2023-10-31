@@ -18,15 +18,15 @@ function App() {
     (state: RootState) => state.auth.isAuthenticated
   );
   useEffect(() => {
-    if (isAuthenticated)
-      axios
-        .get(`${BACKEND_URL}/users/me`, { withCredentials: true })
-        .then(() => {
-          dispatch(login());
-        })
-        .catch((err) => {
-          dispatch(logout());
-        });
+    // isAuthenticated &&
+    axios
+      .get(`${BACKEND_URL}/users/me`, { withCredentials: true })
+      .then(() => {
+        dispatch(login());
+      })
+      .catch((err) => {
+        dispatch(logout());
+      });
   }, []);
 
   return (

@@ -139,24 +139,26 @@ const Todo = () => {
     }
   };
   const getTodos = async () => {
-    if (isAuthenticated === true)
-      try {
+    try {
+      if (isAuthenticated === true) {
         const { data } = await axios.get(`${BACKEND_URL}/task/my`, {
           withCredentials: true,
         });
         dispatch(getMyTodos({ todos: data.tasks }));
-      } catch (error) {
-        const err = error as AxiosError;
-        const data: IError = err.response?.data as IError;
-        dispatch(
-          callNotification({
-            open: true,
-            message: data.message,
-            severity: "error",
-          })
-        );
-        dispatch(logout());
       }
+    } catch (error) {
+      console.log(error);
+      const err = error as AxiosError;
+      const data: IError = err.response?.data as IError;
+      dispatch(
+        callNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        })
+      );
+      dispatch(logout());
+    }
   };
   useEffect(() => {
     getTodos();
@@ -248,6 +250,7 @@ const Todo = () => {
                             severity: data.success ? "success" : "error",
                           })
                         );
+                        setApiCalled(!apiCalled);
                         setIsUpdateTodoClicked(false);
                       } catch (error) {
                         const err = error as AxiosError;
@@ -325,7 +328,7 @@ const Todo = () => {
                   spacing={2}
                 >
                   <Checkbox
-                    defaultChecked={todo.isCompleted}
+                    checked={todo.isCompleted}
                     onChange={() => handleCompleteTodo(todo)}
                   />
                   <Chip label={todo.category} color={todo.categoryChipColor} />
