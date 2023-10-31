@@ -26,6 +26,28 @@ const Register = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
+      if (username.length < 6) {
+        dispatch(
+          callNotification({
+            open: true,
+            message: "Username too short!",
+            severity: "error",
+          })
+        );
+        return;
+      }
+      const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
+      if (!regex.test(password)) {
+        dispatch(
+          callNotification({
+            open: true,
+            message:
+              "Password must contain atleast one uppercase, one lowercase, one number and one special character",
+            severity: "error",
+          })
+        );
+        return;
+      }
       const { data } = await axios.post(
         `${BACKEND_URL}/users/new`,
         {
@@ -122,6 +144,7 @@ const Register = () => {
                 placeholder: "Enter password...",
                 type: "password",
                 required: true,
+
                 startAdornment: (
                   <InputAdornment position="start">
                     <Lock color="primary" />
