@@ -47,6 +47,7 @@ const Register = () => {
       setUsername("");
       setEmail("");
       setPassword("");
+      dispatch(login());
       navigate("/todo");
     } catch (error) {
       const err = error as AxiosError;

@@ -38,6 +38,7 @@ const Todo = () => {
   const [updateTodos, setUpdateTodos] = useState<
     Pick<ITodo, "_id" | "title" | "category">
   >({ _id: "", title: "", category: "" });
+  const [apiCalled, setApiCalled] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const todos = useSelector((state: RootState) => state.todo.todos);
@@ -64,6 +65,7 @@ const Todo = () => {
           severity: data.success ? "success" : "error",
         })
       );
+      setApiCalled(!apiCalled);
       setTitle("");
       setCategory("");
     } catch (error) {
@@ -92,6 +94,7 @@ const Todo = () => {
           severity: data.success ? "success" : "error",
         })
       );
+      setApiCalled(!apiCalled);
     } catch (error) {
       const err = error as AxiosError;
       const data: IError = err.response?.data as IError;
@@ -122,6 +125,7 @@ const Todo = () => {
           severity: data.success ? "success" : "error",
         })
       );
+      setApiCalled(!apiCalled);
     } catch (error) {
       const err = error as AxiosError;
       const data: IError = err.response?.data as IError;
@@ -135,27 +139,28 @@ const Todo = () => {
     }
   };
   const getTodos = async () => {
-    try {
-      const { data } = await axios.get(`${BACKEND_URL}/task/my`, {
-        withCredentials: true,
-      });
-      dispatch(getMyTodos({ todos: data.tasks }));
-    } catch (error) {
-      const err = error as AxiosError;
-      const data: IError = err.response?.data as IError;
-      dispatch(
-        callNotification({
-          open: true,
-          message: data.message,
-          severity: "error",
-        })
-      );
-      dispatch(logout());
-    }
+    if (isAuthenticated === true)
+      try {
+        const { data } = await axios.get(`${BACKEND_URL}/task/my`, {
+          withCredentials: true,
+        });
+        dispatch(getMyTodos({ todos: data.tasks }));
+      } catch (error) {
+        const err = error as AxiosError;
+        const data: IError = err.response?.data as IError;
+        dispatch(
+          callNotification({
+            open: true,
+            message: data.message,
+            severity: "error",
+          })
+        );
+        dispatch(logout());
+      }
   };
   useEffect(() => {
-    if (isAuthenticated) getTodos();
-  }, [open]);
+    getTodos();
+  }, [apiCalled]);
 
   if (!isAuthenticated) return <Navigate to="/" />;
   return (
