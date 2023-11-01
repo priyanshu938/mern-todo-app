@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "./redux/authSlice";
 import { RootState } from "./redux/store";
 
-export const BACKEND_URL = "http://localhost:8080/api/v1";
+export const BACKEND_URL = "https://todoapp-ifau.onrender.com/api/v1";
 
 function App() {
   const dispatch = useDispatch();
