@@ -24,7 +24,7 @@ function App() {
       .then(() => {
         dispatch(login());
       })
-      .catch((err) => {
+      .catch(() => {
         dispatch(logout());
       });
   }, []);
