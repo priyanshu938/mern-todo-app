@@ -6,7 +6,7 @@ import Register from "./components/Register";
 import Navbar from "./components/Navbar";
 import axios from "axios";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { login, logout } from "./redux/authSlice";
 //import { RootState } from "./redux/store";
 
