@@ -37,7 +37,7 @@ const Todo = () => {
 
   const dispatch = useDispatch();
   const todos = useSelector((state: RootState) => state.todo.todos);
-  const open = useSelector((state: RootState) => state.notification.open);
+ // const open = useSelector((state: RootState) => state.notification.open);
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
