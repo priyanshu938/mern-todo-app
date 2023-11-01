@@ -21,6 +21,7 @@ interface IProps {
 export default function Notification({ severity, message, open }: IProps) {
   const dispatch = useDispatch();
   const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
+    console.log(event) 
     if (reason === "clickaway") {
       return;
     }
