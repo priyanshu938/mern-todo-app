@@ -1,6 +1,6 @@
 {
   "name": "react-redux-ts-todo-app",
-  "private": true,
+  "homepage": ".",
   "version": "0.0.0",
   "type": "module",
     "engines": {
